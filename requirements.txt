@@ -1,0 +1,15 @@
+# Python dependencies for Comparing_ML_FrameWorks
+numpy
+matplotlib
+requests
+psutil
+torch
+torchvision
+torchaudio
+torchserve
+torch-model-archiver
+torch-workflow-archiver
+tensorflow
+tensorflow-serving-api
+pillow
+jupyter

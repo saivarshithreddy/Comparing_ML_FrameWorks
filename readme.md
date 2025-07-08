@@ -1,5 +1,7 @@
 # TensorFlow Serving vs TorchServe: Performance Benchmark
 
+A comprehensive comparison and benchmarking suite for two popular machine learning model serving frameworks using a MobileNetV2 model trained on Fashion-MNIST.
+
 A comprehensive performance benchmark comparing TensorFlow Serving and TorchServe for machine learning model deployment using a common MobileNetV2 model trained on Fashion-MNIST.
 
 ## Project Overview
