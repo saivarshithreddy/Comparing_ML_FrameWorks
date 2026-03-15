@@ -1,0 +1,22 @@
+# TorchServe Container
+FROM pytorch/torchserve:latest
+
+# Set working directory
+WORKDIR /home/model-server
+
+# Create model store and config directories
+RUN mkdir -p model-store config
+
+# Copy model files and handler
+COPY model_store/ model-store/
+COPY config/ config/
+COPY torchserve_model_handler.py model-store/
+
+# Expose TorchServe ports
+EXPOSE 8080 8081 8082
+
+# Environment variables
+ENV TS_MODEL_NAME=fashion_mnist
+
+# Start TorchServe
+CMD ["torchserve", "--start", "--model-store", "model-store", "--ts-config", "config/config.properties"]

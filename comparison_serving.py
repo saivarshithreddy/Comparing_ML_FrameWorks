@@ -51,11 +51,15 @@ class ServingComparison:
     def __init__(self, 
                  tf_model_name="fashion",
                  ts_model_name="fashion_mnist",
-                 tf_host="localhost",
-                 ts_host="localhost"):
+                 tf_host=None,
+                 ts_host=None):
         """
         Initialize the performance testing framework.
         """
+        # Get hosts from environment variables or default to localhost
+        tf_host = tf_host or os.environ.get('TF_HOST', 'localhost')
+        ts_host = ts_host or os.environ.get('TS_HOST', 'localhost')
+        
         # TensorFlow Serving endpoints
         self.tf_model_name = tf_model_name
         self.tf_host = tf_host

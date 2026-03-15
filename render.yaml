@@ -3,7 +3,7 @@ services:
   - type: web
     name: ml-frameworks-dashboard
     env: docker
-    repo: https://github.com/YOUR_USERNAME/Comparing_ML_FrameWorks.git
+    repo: https://github.com/saivarshithreddy/Comparing_ML_FrameWorks.git
     rootDir: .
     dockerfilePath: ./Dockerfile
     dockerContext: . 
@@ -16,26 +16,42 @@ services:
         value: production
       - key: PYTHONPATH
         value: /app
+      - key: TF_HOST
+        value: tensorflow-serving.onrender.com
+      - key: TS_HOST
+        value: torchserve.onrender.com
     autoDeploy: true
     
-  # Optional: Background Worker for experiments
-  - type: worker
-    name: ml-experiments-worker
+  # TensorFlow Serving Service
+  - type: pserv
+    name: tensorflow-serving
     env: docker
-    repo: https://github.com/YOUR_USERNAME/Comparing_ML_FrameWorks.git
+    repo: https://github.com/saivarshithreddy/Comparing_ML_FrameWorks.git
     rootDir: .
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./Dockerfile.tensorflow
     dockerContext: .
     plan: free
     region: oregon
     branch: main
     envVars:
-      - key: FLASK_ENV
-        value: production
-      - key: PYTHONPATH
-        value: /app
-      - key: WORKER_MODE
-        value: "true"
+      - key: MODEL_NAME
+        value: fashion
+    autoDeploy: true
+    
+  # TorchServe Service
+  - type: pserv
+    name: torchserve
+    env: docker
+    repo: https://github.com/saivarshithreddy/Comparing_ML_FrameWorks.git
+    rootDir: .
+    dockerfilePath: ./Dockerfile.torchserve
+    dockerContext: .
+    plan: free
+    region: oregon
+    branch: main
+    envVars:
+      - key: TS_MODEL_NAME
+        value: fashion_mnist
     autoDeploy: true
 
 # Optional: Add PostgreSQL for persistent storage

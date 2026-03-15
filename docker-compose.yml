@@ -1,13 +1,13 @@
-version: '3.8'
-
 services:
   web:
     build: .
     ports:
-      - "8080:8080"
+      - "8083:8080"
     environment:
       - FLASK_ENV=production
       - PYTHONPATH=/app
+      - TF_HOST=tensorflow-serving
+      - TS_HOST=torchserve
     volumes:
       - ./serving_comparison_results:/app/serving_comparison_results
       - ./data:/app/data
@@ -19,12 +19,15 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    depends_on:
+      - tensorflow-serving
+      - torchserve
 
-  # Optional: Add TensorFlow Serving service
+  # TensorFlow Serving service
   tensorflow-serving:
     image: tensorflow/serving:latest
     ports:
-      - "8501:8501"
+      - "8502:8501"
     environment:
       - MODEL_NAME=fashion
     volumes:
@@ -35,24 +38,20 @@ services:
       --rest_api_port=8501
       --rest_api_timeout_in_ms=30000
     restart: unless-stopped
-    profiles:
-      - full
 
-  # Optional: Add TorchServe service
+  # TorchServe service
   torchserve:
     image: pytorch/torchserve:latest
     ports:
-      - "8080:8080"
-      - "8081:8081"
-      - "8082:8082"
+      - "8084:8080"
+      - "8085:8081"
+      - "8086:8082"
     volumes:
       - ./model_store:/home/model-server/model-store
       - ./config:/home/model-server/config
     command: >
       torchserve --start --model-store model-store --ts-config config/config.properties
     restart: unless-stopped
-    profiles:
-      - full
 
 networks:
   default:

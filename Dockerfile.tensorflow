@@ -1,0 +1,21 @@
+# TensorFlow Serving Container
+FROM tensorflow/serving:latest
+
+# Set working directory
+WORKDIR /models
+
+# Copy model files (you'll need to add your model)
+COPY tensorflow_model/ /models/fashion/
+
+# Expose TensorFlow Serving port
+EXPOSE 8501
+
+# Environment variables
+ENV MODEL_NAME=fashion
+
+# Start TensorFlow Serving
+CMD ["tensorflow_model_server", \
+     "--model_name=fashion", \
+     "--model_base_path=/models/fashion", \
+     "--rest_api_port=8501", \
+     "--rest_api_timeout_in_ms=30000"]
