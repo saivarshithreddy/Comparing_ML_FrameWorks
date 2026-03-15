@@ -22,8 +22,8 @@ experiment_thread = None
 
 @app.route('/')
 def index():
-    """Main dashboard page with classic professional UI"""
-    return render_template('index_classic.html')
+    """Main dashboard page with human-designed classic UI"""
+    return render_template('index_human.html')
 
 @app.route('/api/system-info')
 def system_info():
