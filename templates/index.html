@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Frameworks Comparison Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --dark-bg: #1a1a2e;
+            --card-bg: #16213e;
+            --text-light: #e94560;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: rgba(26, 26, 46, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .main-container {
+            padding: 2rem;
+        }
+
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 2rem;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            background: var(--primary-gradient);
+            color: white;
+            font-weight: 600;
+            padding: 1.2rem;
+            border: none;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: scale(1.05);
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .framework-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: 600;
+            margin: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .tensorflow-badge {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+
+        .torchserve-badge {
+            background: linear-gradient(135deg, #4834d4, #686de0);
+            color: white;
+        }
+
+        .progress-container {
+            margin: 2rem 0;
+        }
+
+        .custom-progress {
+            height: 25px;
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .progress-bar-animated {
+            background: var(--success-gradient);
+            transition: width 0.3s ease;
+        }
+
+        .btn-gradient {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        .status-idle { background: #6c757d; }
+        .status-running { background: #ffc107; animation: pulse 1.5s infinite; }
+        .status-completed { background: #28a745; }
+        .status-failed { background: #dc3545; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 2rem 0;
+        }
+
+        .results-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .results-table thead {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading-spinner.active {
+            display: block;
+        }
+
+        .system-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .system-metric {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .footer {
+            background: rgba(26, 26, 46, 0.95);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-dark navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-chart-line me-2"></i>
+                ML Frameworks Comparison
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text">
+                    <span class="status-indicator status-idle" id="statusIndicator"></span>
+                    <span id="statusText">Idle</span>
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container main-container">
+        <!-- Header Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="dashboard-card">
+                    <div class="card-body text-center">
+                        <h1 class="display-4 mb-3">TensorFlow Serving vs TorchServe</h1>
+                        <p class="lead">Real-time performance benchmarking and comparison dashboard</p>
+                        <div class="mt-3">
+                            <span class="framework-badge tensorflow-badge">
+                                <i class="fab fa-google me-2"></i>TensorFlow Serving
+                            </span>
+                            <span class="framework-badge torchserve-badge">
+                                <i class="fab fa-pytorch me-2"></i>TorchServe
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Metrics -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <i class="fas fa-tachometer-alt me-2"></i>System Resources
+                    </div>
+                    <div class="card-body">
+                        <div class="system-metrics">
+                            <div class="system-metric">
+                                <i class="fas fa-microchip fa-2x mb-2"></i>
+                                <h5>CPU Usage</h5>
+                                <h3 id="cpuUsage">0%</h3>
+                            </div>
+                            <div class="system-metric">
+                                <i class="fas fa-memory fa-2x mb-2"></i>
+                                <h5>Memory Usage</h5>
+                                <h3 id="memoryUsage">0%</h3>
+                            </div>
+                            <div class="system-metric">
+                                <i class="fas fa-hdd fa-2x mb-2"></i>
+                                <h5>Disk Usage</h5>
+                                <h3 id="diskUsage">0%</h3>
+                            </div>
+                            <div class="system-metric">
+                                <i class="fas fa-clock fa-2x mb-2"></i>
+                                <h5>Last Updated</h5>
+                                <h6 id="lastUpdate">Never</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Experiment Controls -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <i class="fas fa-play-circle me-2"></i>Experiment Configuration
+                    </div>
+                    <div class="card-body">
+                        <form id="experimentForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">Request Rates (req/sec)</label>
+                                    <input type="text" class="form-control" id="rates" value="1,5,10" 
+                                           placeholder="e.g., 1,5,10">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Buffer Sizes</label>
+                                    <input type="text" class="form-control" id="bufferSizes" value="10,50" 
+                                           placeholder="e.g., 10,50">
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Duration (seconds)</label>
+                                    <input type="number" class="form-control" id="duration" value="15" min="5" max="300">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Worker Threads</label>
+                                    <input type="number" class="form-control" id="workerThreads" value="10" min="1" max="50">
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button type="submit" class="btn btn-gradient" id="startBtn">
+                                    <i class="fas fa-play me-2"></i>Start Comparison
+                                </button>
+                                <button type="button" class="btn btn-secondary ms-2" id="stopBtn" disabled>
+                                    <i class="fas fa-stop me-2"></i>Stop
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <i class="fas fa-chart-bar me-2"></i>Quick Stats
+                    </div>
+                    <div class="card-body">
+                        <div class="metric-card mb-3">
+                            <div class="metric-value" id="totalExperiments">0</div>
+                            <div class="metric-label">Total Experiments</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="avgLatency">0ms</div>
+                            <div class="metric-label">Average Latency</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div class="row mb-4" id="progressSection" style="display: none;">
+            <div class="col-12">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <i class="fas fa-spinner me-2"></i>Experiment Progress
+                    </div>
+                    <div class="card-body">
+                        <div class="progress-container">
+                            <div class="custom-progress">
+                                <div class="progress-bar progress-bar-animated" id="progressBar" style="width: 0%">
+                                    <span id="progressText">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <small class="text-muted" id="experimentDetails">Initializing...</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="row">
+            <div class="col-12">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <i class="fas fa-chart-line me-2"></i>Performance Results
+                    </div>
+                    <div class="card-body">
+                        <div class="loading-spinner" id="resultsLoader">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading results...</p>
+                        </div>
+                        
+                        <div id="resultsContent">
+                            <!-- Chart Container -->
+                            <div class="chart-container">
+                                <canvas id="performanceChart"></canvas>
+                            </div>
+                            
+                            <!-- Results Table -->
+                            <div class="mt-4">
+                                <h5>Detailed Results</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-striped results-table" id="resultsTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Framework</th>
+                                                <th>Request Rate</th>
+                                                <th>Buffer Size</th>
+                                                <th>Avg Latency</th>
+                                                <th>P95 Latency</th>
+                                                <th>Throughput</th>
+                                                <th>Success Rate</th>
+                                                <th>CPU Usage</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="resultsTableBody">
+                                            <tr>
+                                                <td colspan="8" class="text-center text-muted">No results available</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 ML Frameworks Comparison Dashboard. Built with <i class="fas fa-heart text-danger"></i> for performance analysis.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global variables
+        let performanceChart = null;
+        let currentExperiment = null;
+        let updateInterval = null;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeChart();
+            loadResults();
+            updateSystemInfo();
+            setInterval(updateSystemInfo, 5000); // Update every 5 seconds
+            setInterval(updateExperimentStatus, 2000); // Update experiment status every 2 seconds
+        });
+
+        // Initialize performance chart
+        function initializeChart() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            performanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'TensorFlow Serving Latency',
+                            data: [],
+                            borderColor: '#ff6b6b',
+                            backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'TorchServe Latency',
+                            data: [],
+                            borderColor: '#4834d4',
+                            backgroundColor: 'rgba(72, 52, 212, 0.1)',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Latency Comparison (ms)'
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Request Rate (req/sec)'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Latency (ms)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update system information
+        function updateSystemInfo() {
+            fetch('/api/system-info')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('cpuUsage').textContent = data.cpu_percent.toFixed(1) + '%';
+                    document.getElementById('memoryUsage').textContent = data.memory_percent.toFixed(1) + '%';
+                    document.getElementById('diskUsage').textContent = data.disk_usage.toFixed(1) + '%';
+                    document.getElementById('lastUpdate').textContent = new Date(data.timestamp).toLocaleTimeString();
+                })
+                .catch(error => console.error('Error fetching system info:', error));
+        }
+
+        // Update experiment status
+        function updateExperimentStatus() {
+            fetch('/api/experiment-status')
+                .then(response => response.json())
+                .then(data => {
+                    currentExperiment = data;
+                    updateStatusIndicator(data.status);
+                    
+                    if (data.status === 'running') {
+                        updateProgress(data.progress || 0);
+                        document.getElementById('progressSection').style.display = 'block';
+                        document.getElementById('experimentDetails').textContent = 
+                            `Experiment ID: ${data.id} - ${data.progress || 0}% complete`;
+                    } else if (data.status === 'completed') {
+                        updateProgress(100);
+                        document.getElementById('progressSection').style.display = 'block';
+                        document.getElementById('experimentDetails').textContent = 
+                            `Experiment ${data.id} completed successfully!`;
+                        loadResults(); // Reload results
+                    } else if (data.status === 'failed') {
+                        document.getElementById('progressSection').style.display = 'block';
+                        document.getElementById('experimentDetails').textContent = 
+                            `Experiment failed: ${data.error || 'Unknown error'}`;
+                    }
+                })
+                .catch(error => console.error('Error fetching experiment status:', error));
+        }
+
+        // Update status indicator
+        function updateStatusIndicator(status) {
+            const indicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            
+            indicator.className = 'status-indicator';
+            
+            switch(status) {
+                case 'idle':
+                    indicator.classList.add('status-idle');
+                    statusText.textContent = 'Idle';
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                    break;
+                case 'running':
+                    indicator.classList.add('status-running');
+                    statusText.textContent = 'Running';
+                    startBtn.disabled = true;
+                    stopBtn.disabled = false;
+                    break;
+                case 'completed':
+                    indicator.classList.add('status-completed');
+                    statusText.textContent = 'Completed';
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                    break;
+                case 'failed':
+                    indicator.classList.add('status-failed');
+                    statusText.textContent = 'Failed';
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                    break;
+            }
+        }
+
+        // Update progress bar
+        function updateProgress(progress) {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            progressBar.style.width = progress + '%';
+            progressText.textContent = progress.toFixed(1) + '%';
+        }
+
+        // Handle experiment form submission
+        document.getElementById('experimentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const rates = document.getElementById('rates').value.split(',').map(r => parseInt(r.trim()));
+            const bufferSizes = document.getElementById('bufferSizes').value.split(',').map(b => parseInt(b.trim()));
+            const duration = parseInt(document.getElementById('duration').value);
+            const workerThreads = parseInt(document.getElementById('workerThreads').value);
+            
+            fetch('/api/start-comparison', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    rates: rates,
+                    buffer_sizes: bufferSizes,
+                    duration: duration,
+                    worker_threads: workerThreads
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                } else {
+                    console.log('Experiment started:', data);
+                    updateExperimentStatus();
+                }
+            })
+            .catch(error => {
+                console.error('Error starting experiment:', error);
+                alert('Error starting experiment: ' + error);
+            });
+        });
+
+        // Load results
+        function loadResults() {
+            document.getElementById('resultsLoader').classList.add('active');
+            
+            fetch('/api/results')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('resultsLoader').classList.remove('active');
+                    displayResults(data);
+                    updateChart(data);
+                    updateQuickStats(data);
+                })
+                .catch(error => {
+                    document.getElementById('resultsLoader').classList.remove('active');
+                    console.error('Error loading results:', error);
+                });
+        }
+
+        // Display results in table
+        function displayResults(results) {
+            const tbody = document.getElementById('resultsTableBody');
+            
+            if (!results || results.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No results available</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            
+            results.forEach(result => {
+                if (result.framework_metrics) {
+                    Object.entries(result.framework_metrics).forEach(([framework, metrics]) => {
+                        const row = tbody.insertRow();
+                        row.innerHTML = `
+                            <td><span class="framework-badge ${framework === 'tensorflow' ? 'tensorflow-badge' : 'torchserve-badge'}">${framework}</span></td>
+                            <td>${metrics.requested_rate || 'N/A'}</td>
+                            <td>${metrics.buffer_size || 'N/A'}</td>
+                            <td>${(metrics.avg_latency * 1000 || 0).toFixed(2)}ms</td>
+                            <td>${(metrics.p95_latency * 1000 || 0).toFixed(2)}ms</td>
+                            <td>${(metrics.throughput || 0).toFixed(2)}</td>
+                            <td>${((metrics.success_rate || 0) * 100).toFixed(1)}%</td>
+                            <td>${(metrics.avg_cpu_usage || 0).toFixed(1)}%</td>
+                        `;
+                    });
+                }
+            });
+        }
+
+        // Update chart with results
+        function updateChart(results) {
+            if (!performanceChart || !results || results.length === 0) return;
+            
+            const rates = [...new Set(results.flatMap(r => 
+                r.framework_metrics ? Object.values(r.framework_metrics).map(m => m.requested_rate) : []
+            ))].sort((a, b) => a - b);
+            
+            const tfData = [];
+            const tsData = [];
+            
+            results.forEach(result => {
+                if (result.framework_metrics) {
+                    Object.entries(result.framework_metrics).forEach(([framework, metrics]) => {
+                        if (framework === 'tensorflow') {
+                            tfData.push((metrics.avg_latency * 1000 || 0));
+                        } else if (framework === 'torchserve') {
+                            tsData.push((metrics.avg_latency * 1000 || 0));
+                        }
+                    });
+                }
+            });
+            
+            performanceChart.data.labels = rates;
+            performanceChart.data.datasets[0].data = tfData;
+            performanceChart.data.datasets[1].data = tsData;
+            performanceChart.update();
+        }
+
+        // Update quick stats
+        function updateQuickStats(results) {
+            if (!results || results.length === 0) {
+                document.getElementById('totalExperiments').textContent = '0';
+                document.getElementById('avgLatency').textContent = '0ms';
+                return;
+            }
+            
+            const totalExperiments = results.length;
+            let totalLatency = 0;
+            let latencyCount = 0;
+            
+            results.forEach(result => {
+                if (result.framework_metrics) {
+                    Object.values(result.framework_metrics).forEach(metrics => {
+                        totalLatency += metrics.avg_latency * 1000 || 0;
+                        latencyCount++;
+                    });
+                }
+            });
+            
+            const avgLatency = latencyCount > 0 ? totalLatency / latencyCount : 0;
+            
+            document.getElementById('totalExperiments').textContent = totalExperiments;
+            document.getElementById('avgLatency').textContent = avgLatency.toFixed(2) + 'ms';
+        }
+    </script>
+</body>
+</html>

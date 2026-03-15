@@ -13,3 +13,5 @@ tensorflow
 tensorflow-serving-api
 pillow
 jupyter
+flask
+gunicorn

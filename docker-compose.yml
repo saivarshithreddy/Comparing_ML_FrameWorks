@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - FLASK_ENV=production
+      - PYTHONPATH=/app
+    volumes:
+      - ./serving_comparison_results:/app/serving_comparison_results
+      - ./data:/app/data
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Add TensorFlow Serving service
+  tensorflow-serving:
+    image: tensorflow/serving:latest
+    ports:
+      - "8501:8501"
+    environment:
+      - MODEL_NAME=fashion
+    volumes:
+      - ./tensorflow_model:/models/fashion
+    command: >
+      --model_name=fashion
+      --model_base_path=/models/fashion
+      --rest_api_port=8501
+      --rest_api_timeout_in_ms=30000
+    restart: unless-stopped
+    profiles:
+      - full
+
+  # Optional: Add TorchServe service
+  torchserve:
+    image: pytorch/torchserve:latest
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+      - "8082:8082"
+    volumes:
+      - ./model_store:/home/model-server/model-store
+      - ./config:/home/model-server/config
+    command: >
+      torchserve --start --model-store model-store --ts-config config/config.properties
+    restart: unless-stopped
+    profiles:
+      - full
+
+networks:
+  default:
+    name: ml-comparison-network
