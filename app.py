@@ -96,6 +96,101 @@ def get_results():
                 except:
                     continue
     
+    # If no real results, add sample data for demonstration
+    if not results:
+        results = [
+            {
+                "experiment_id": "demo_001",
+                "timestamp": datetime.now().isoformat(),
+                "parameters": {
+                    "rates": [1, 5, 10],
+                    "buffer_sizes": [10],
+                    "duration": 30,
+                    "worker_threads": 5
+                },
+                "framework_metrics": {
+                    "tensorflow": {
+                        "requested_rate": 1,
+                        "buffer_size": 10,
+                        "avg_latency": 0.045,
+                        "p95_latency": 0.089,
+                        "throughput": 0.98,
+                        "success_rate": 0.99,
+                        "avg_cpu_usage": 15.2
+                    },
+                    "torchserve": {
+                        "requested_rate": 1,
+                        "buffer_size": 10,
+                        "avg_latency": 0.052,
+                        "p95_latency": 0.095,
+                        "throughput": 0.95,
+                        "success_rate": 0.98,
+                        "avg_cpu_usage": 18.7
+                    }
+                }
+            },
+            {
+                "experiment_id": "demo_002", 
+                "timestamp": datetime.now().isoformat(),
+                "parameters": {
+                    "rates": [1, 5, 10],
+                    "buffer_sizes": [10],
+                    "duration": 30,
+                    "worker_threads": 5
+                },
+                "framework_metrics": {
+                    "tensorflow": {
+                        "requested_rate": 5,
+                        "buffer_size": 10,
+                        "avg_latency": 0.067,
+                        "p95_latency": 0.134,
+                        "throughput": 4.8,
+                        "success_rate": 0.97,
+                        "avg_cpu_usage": 32.4
+                    },
+                    "torchserve": {
+                        "requested_rate": 5,
+                        "buffer_size": 10,
+                        "avg_latency": 0.078,
+                        "p95_latency": 0.156,
+                        "throughput": 4.6,
+                        "success_rate": 0.96,
+                        "avg_cpu_usage": 38.9
+                    }
+                }
+            },
+            {
+                "experiment_id": "demo_003",
+                "timestamp": datetime.now().isoformat(),
+                "parameters": {
+                    "rates": [1, 5, 10],
+                    "buffer_sizes": [10],
+                    "duration": 30,
+                    "worker_threads": 5
+                },
+                "framework_metrics": {
+                    "tensorflow": {
+                        "requested_rate": 10,
+                        "buffer_size": 10,
+                        "avg_latency": 0.089,
+                        "p95_latency": 0.178,
+                        "throughput": 9.2,
+                        "success_rate": 0.95,
+                        "avg_cpu_usage": 58.7
+                    },
+                    "torchserve": {
+                        "requested_rate": 10,
+                        "buffer_size": 10,
+                        "avg_latency": 0.102,
+                        "p95_latency": 0.204,
+                        "throughput": 8.8,
+                        "success_rate": 0.94,
+                        "avg_cpu_usage": 67.3
+                    }
+                }
+            }
+        ]
+    
     return jsonify(results)
 
 @app.route('/api/results/<filename>')

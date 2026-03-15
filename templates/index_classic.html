@@ -725,17 +725,28 @@
 
         // Initialize application
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing app...');
             initializeChart();
             loadResults();
             updateSystemInfo();
             setInterval(updateSystemInfo, 5000);
             setInterval(updateExperimentStatus, 2000);
+            
+            console.log('App initialization complete');
         });
 
         // Initialize professional chart
         function initializeChart() {
-            const ctx = document.getElementById('performanceChart').getContext('2d');
-            performanceChart = new Chart(ctx, {
+            console.log('Initializing chart...');
+            const ctx = document.getElementById('performanceChart');
+            
+            if (!ctx) {
+                console.error('Chart canvas not found!');
+                return;
+            }
+            
+            const chartContext = ctx.getContext('2d');
+            performanceChart = new Chart(chartContext, {
                 type: 'line',
                 data: {
                     labels: [],
@@ -797,6 +808,8 @@
                     }
                 }
             });
+            
+            console.log('Chart initialized successfully');
         }
 
         // Update system information
@@ -1003,7 +1016,12 @@
 
         // Update chart with results
         function updateChart(results) {
-            if (!performanceChart || !results || results.length === 0) return;
+            console.log('Updating chart with results:', results);
+            
+            if (!performanceChart || !results || results.length === 0) {
+                console.log('No chart or no results, skipping update');
+                return;
+            }
             
             const rates = [...new Set(results.flatMap(r => 
                 r.framework_metrics ? Object.values(r.framework_metrics).map(m => m.requested_rate) : []
@@ -1024,10 +1042,16 @@
                 }
             });
             
+            console.log('Chart data - Labels:', rates);
+            console.log('Chart data - TensorFlow:', tfData);
+            console.log('Chart data - TorchServe:', tsData);
+            
             performanceChart.data.labels = rates;
             performanceChart.data.datasets[0].data = tfData;
             performanceChart.data.datasets[1].data = tsData;
-            performanceChart.update();
+            performanceChart.update('active');
+            
+            console.log('Chart updated successfully');
         }
 
         // Update quick stats
