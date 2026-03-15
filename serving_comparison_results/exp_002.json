@@ -1,0 +1,38 @@
+{
+  "experiment_id": "exp_002",
+  "timestamp": "2026-03-15T21:20:36.227465",
+  "parameters": {
+    "rates": [
+      1,
+      5,
+      10,
+      20,
+      50
+    ],
+    "buffer_sizes": [
+      10
+    ],
+    "duration": 15,
+    "worker_threads": 5
+  },
+  "framework_metrics": {
+    "tensorflow": {
+      "requested_rate": 5,
+      "buffer_size": 10,
+      "avg_latency": 0.0632,
+      "p95_latency": 0.115,
+      "throughput": 5.29,
+      "success_rate": 0.9817,
+      "avg_cpu_usage": 33.3
+    },
+    "torchserve": {
+      "requested_rate": 5,
+      "buffer_size": 10,
+      "avg_latency": 0.0648,
+      "p95_latency": 0.118,
+      "throughput": 5.19,
+      "success_rate": 0.9775,
+      "avg_cpu_usage": 37.8
+    }
+  }
+}
