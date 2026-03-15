@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Frameworks Comparison | Professional Analytics Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --info-color: #0dcaf0;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --tensorflow-color: #ff6b00;
+            --pytorch-color: #ee4c2c;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        /* Professional Navigation */
+        .navbar {
+            background-color: white !important;
+            box-shadow: var(--box-shadow);
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .navbar-brand {
+            color: var(--primary-color) !important;
+            font-weight: 700;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-brand i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        .nav-link {
+            color: var(--dark-color) !important;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            background-color: var(--light-color);
+            border: 1px solid #dee2e6;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: none;
+        }
+
+        .status-idle { background-color: var(--secondary-color); }
+        .status-running { 
+            background-color: var(--warning-color);
+            animation: pulse 2s infinite;
+        }
+        .status-completed { background-color: var(--success-color); }
+        .status-failed { background-color: var(--danger-color); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #1e3a8a 100%);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+
+        .framework-badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .framework-badge {
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            font-weight: 700;
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            border: 2px solid transparent;
+        }
+
+        .tensorflow-badge {
+            background-color: var(--tensorflow-color);
+            color: white;
+        }
+
+        .pytorch-badge {
+            background-color: var(--pytorch-color);
+            color: white;
+        }
+
+        .framework-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .framework-badge i {
+            margin-right: 8px;
+        }
+
+        /* Professional Cards */
+        .card {
+            background-color: white;
+            border: 1px solid #dee2e6;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            height: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            background-color: var(--light-color);
+            border-bottom: 1px solid #dee2e6;
+            font-weight: 700;
+            color: var(--dark-color);
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        /* Metrics Grid */
+        .metric-card {
+            text-align: center;
+            padding: 2rem 1rem;
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+            border: 1px solid #e9ecef;
+            transition: var(--transition);
+        }
+
+        .metric-card:hover {
+            background-color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .metric-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            color: var(--secondary-color);
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Professional Forms */
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: var(--border-radius);
+            padding: 0.75rem 1rem;
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Professional Buttons */
+        .btn {
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            padding: 0.75rem 2rem;
+            transition: var(--transition);
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #1a2b6d;
+            border-color: #1a2b6d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #5c636a;
+            border-color: #5c636a;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-primary {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Progress Bar */
+        .progress {
+            height: 8px;
+            border-radius: 4px;
+            background-color: #e9ecef;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background-color: var(--success-color);
+            transition: width 0.6s ease;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 400px;
+            background-color: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #dee2e6;
+            box-shadow: var(--box-shadow);
+        }
+
+        /* Results Table */
+        .results-table {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+        }
+
+        .results-table thead {
+            background-color: var(--light-color);
+        }
+
+        .results-table th {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            letter-spacing: 0.5px;
+            padding: 1rem;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .results-table td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .results-table tbody tr:hover {
+            background-color: var(--light-color);
+        }
+
+        .framework-pill {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .tensorflow-pill {
+            background-color: var(--tensorflow-color);
+        }
+
+        .pytorch-pill {
+            background-color: var(--pytorch-color);
+        }
+
+        /* Status Section */
+        .status-section {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid #e9ecef;
+            box-shadow: var(--box-shadow);
+        }
+
+        .alert {
+            border-radius: var(--border-radius);
+            border: none;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Loading Spinner */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+            
+            .metric-value {
+                font-size: 2rem;
+            }
+            
+            .chart-container {
+                height: 300px;
+            }
+            
+            .framework-badges {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-chart-line"></i>
+                ML Frameworks Comparison
+            </a>
+            <div class="navbar-nav ms-auto">
+                <div class="status-badge">
+                    <span class="status-indicator status-idle" id="statusIndicator"></span>
+                    <span id="statusText">Ready</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">Professional ML Frameworks Comparison</h1>
+            <p class="hero-subtitle">Enterprise-grade Performance Analytics Platform</p>
+            <div class="framework-badges">
+                <a href="#" class="framework-badge tensorflow-badge">
+                    <i class="fab fa-google"></i>
+                    TensorFlow Serving
+                </a>
+                <a href="#" class="framework-badge pytorch-badge">
+                    <i class="fab fa-python"></i>
+                    TorchServe
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container" style="margin-top: -40px;">
+        <div class="row">
+            <!-- System Metrics -->
+            <div class="col-lg-3 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-tachometer-alt me-2"></i>
+                        System Resources
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <div class="metric-card">
+                                    <i class="fas fa-microchip metric-icon"></i>
+                                    <div class="metric-value" id="cpuUsage">0%</div>
+                                    <div class="metric-label">CPU</div>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <div class="metric-card">
+                                    <i class="fas fa-memory metric-icon"></i>
+                                    <div class="metric-value" id="memoryUsage">0%</div>
+                                    <div class="metric-label">Memory</div>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <div class="metric-card">
+                                    <i class="fas fa-hdd metric-icon"></i>
+                                    <div class="metric-value" id="diskUsage">0%</div>
+                                    <div class="metric-label">Disk</div>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <div class="metric-card">
+                                    <i class="fas fa-clock metric-icon"></i>
+                                    <div class="metric-value" id="lastUpdate" style="font-size: 1.5rem;">--:--</div>
+                                    <div class="metric-label">Updated</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Experiment Configuration -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-cogs me-2"></i>
+                        Experiment Configuration
+                    </div>
+                    <div class="card-body">
+                        <form id="experimentForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="rates" class="form-label">Request Rates (req/sec)</label>
+                                    <input type="text" class="form-control" id="rates" value="1,5,10" 
+                                           placeholder="e.g., 1,5,10">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="bufferSizes" class="form-label">Buffer Sizes</label>
+                                    <input type="text" class="form-control" id="bufferSizes" value="10,50" 
+                                           placeholder="e.g., 10,50">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="duration" class="form-label">Duration (seconds)</label>
+                                    <input type="number" class="form-control" id="duration" value="15" min="5" max="300">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="workerThreads" class="form-label">Worker Threads</label>
+                                    <input type="number" class="form-control" id="workerThreads" value="10" min="1" max="50">
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary" id="startBtn">
+                                    <i class="fas fa-play me-2"></i>
+                                    Start Experiment
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="stopBtn" disabled>
+                                    <i class="fas fa-stop me-2"></i>
+                                    Stop
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" id="resetBtn">
+                                    <i class="fas fa-redo me-2"></i>
+                                    Reset
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="col-lg-3 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        Performance Stats
+                    </div>
+                    <div class="card-body">
+                        <div class="metric-card mb-3">
+                            <i class="fas fa-flask metric-icon"></i>
+                            <div class="metric-value" id="totalExperiments">0</div>
+                            <div class="metric-label">Experiments</div>
+                        </div>
+                        <div class="metric-card">
+                            <i class="fas fa-tachometer-alt metric-icon"></i>
+                            <div class="metric-value" id="avgLatency">0ms</div>
+                            <div class="metric-label">Avg Latency</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div class="row mb-4" id="progressSection" style="display: none;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-spinner me-2"></i>
+                        Experiment Progress
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="progress">
+                                <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+                            </div>
+                            <div class="mt-2">
+                                <small class="text-muted">Progress: <span id="progressText">0%</span></small>
+                            </div>
+                        </div>
+                        <div class="status-section" id="experimentDetails">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Ready to start new experiment
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-chart-line me-2"></i>
+                        Performance Results
+                    </div>
+                    <div class="card-body">
+                        <div id="resultsLoader" class="text-center py-5" style="display: none;">
+                            <div class="spinner mb-3"></div>
+                            <h5>Loading Results...</h5>
+                            <p class="text-muted">Please wait while we process your experiment data</p>
+                        </div>
+                        
+                        <div id="resultsContent">
+                            <!-- Chart -->
+                            <div class="chart-container mb-4">
+                                <canvas id="performanceChart"></canvas>
+                            </div>
+                            
+                            <!-- Results Table -->
+                            <div class="table-responsive">
+                                <table class="table table-striped results-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Framework</th>
+                                            <th>Request Rate</th>
+                                            <th>Buffer Size</th>
+                                            <th>Avg Latency</th>
+                                            <th>P95 Latency</th>
+                                            <th>Throughput</th>
+                                            <th>Success Rate</th>
+                                            <th>CPU Usage</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="resultsTableBody">
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted py-4">
+                                                <i class="fas fa-chart-line fa-3x mb-3 text-muted"></i>
+                                                <h5>No experiments run yet</h5>
+                                                <p class="text-muted">Configure and start an experiment to see performance results</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="mb-3">ML Frameworks Comparison</h5>
+                    <p class="mb-0">Professional performance analytics Platform</p>
+                    <p class="small mb-0">Built with <i class="fas fa-heart text-danger"></i> for ML Engineers</p>
+                </div>
+                <div class="col-md-6">
+                    <h5 class="mb-3">Technologies</h5>
+                    <p class="mb-0">
+                        <span class="badge me-2" style="background-color: var(--tensorflow-color);">TensorFlow</span>
+                        <span class="badge me-2" style="background-color: var(--pytorch-color);">PyTorch</span>
+                        <span class="badge me-2" style="background-color: var(--info-color);">Flask</span>
+                        <span class="badge me-2" style="background-color: var(--secondary-color);">Docker</span>
+                    </p>
+                </div>
+            </div>
+            <hr class="my-3">
+            <p class="mb-0">© 2024 ML Frameworks Comparison. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global variables
+        let performanceChart = null;
+        let currentExperiment = null;
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeChart();
+            loadResults();
+            updateSystemInfo();
+            setInterval(updateSystemInfo, 5000);
+            setInterval(updateExperimentStatus, 2000);
+        });
+
+        // Initialize professional chart
+        function initializeChart() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            performanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'TensorFlow Serving',
+                            data: [],
+                            borderColor: '#ff6b00',
+                            backgroundColor: 'rgba(255, 107, 0, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        },
+                        {
+                            label: 'TorchServe',
+                            data: [],
+                            borderColor: '#ee4c2c',
+                            backgroundColor: 'rgba(238, 76, 44, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Framework Performance Comparison',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Request Rate (req/sec)'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Latency (ms)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update system information
+        function updateSystemInfo() {
+            fetch('/api/system-info')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('cpuUsage').textContent = data.cpu_percent.toFixed(1) + '%';
+                    document.getElementById('memoryUsage').textContent = data.memory_percent.toFixed(1) + '%';
+                    document.getElementById('diskUsage').textContent = data.disk_usage.toFixed(1) + '%';
+                    document.getElementById('lastUpdate').textContent = new Date(data.timestamp).toLocaleTimeString();
+                })
+                .catch(error => console.error('Error fetching system info:', error));
+        }
+
+        // Update experiment status
+        function updateExperimentStatus() {
+            fetch('/api/experiment-status')
+                .then(response => response.json())
+                .then(data => {
+                    currentExperiment = data;
+                    updateStatusIndicator(data.status);
+                    
+                    if (data.status === 'running') {
+                        updateProgress(data.progress || 0);
+                        document.getElementById('progressSection').style.display = 'block';
+                        document.getElementById('experimentDetails').innerHTML = `
+                            <i class="fas fa-play-circle me-2"></i>
+                            <strong>Experiment ID:</strong> ${data.id}<br>
+                            <strong>Progress:</strong> ${data.progress || 0}%<br>
+                            <strong>Status:</strong> Running...
+                        `;
+                    } else if (data.status === 'completed') {
+                        updateProgress(100);
+                        document.getElementById('progressSection').style.display = 'block';
+                        document.getElementById('experimentDetails').innerHTML = `
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i>
+                                <strong>Experiment ${data.id} completed successfully!</strong>
+                            </div>
+                        `;
+                        loadResults();
+                    } else if (data.status === 'failed') {
+                        document.getElementById('progressSection').style.display = 'block';
+                        document.getElementById('experimentDetails').innerHTML = `
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Experiment failed:</strong> ${data.error || 'Unknown error'}
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => console.error('Error fetching experiment status:', error));
+        }
+
+        // Update status indicator
+        function updateStatusIndicator(status) {
+            const indicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            
+            indicator.className = 'status-indicator';
+            
+            switch(status) {
+                case 'idle':
+                    indicator.classList.add('status-idle');
+                    statusText.textContent = 'Ready';
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                    break;
+                case 'running':
+                    indicator.classList.add('status-running');
+                    statusText.textContent = 'Running';
+                    startBtn.disabled = true;
+                    stopBtn.disabled = false;
+                    break;
+                case 'completed':
+                    indicator.classList.add('status-completed');
+                    statusText.textContent = 'Completed';
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                    break;
+                case 'failed':
+                    indicator.classList.add('status-failed');
+                    statusText.textContent = 'Failed';
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                    break;
+            }
+        }
+
+        // Update progress bar
+        function updateProgress(progress) {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            progressBar.style.width = progress + '%';
+            progressText.textContent = progress.toFixed(1) + '%';
+        }
+
+        // Handle experiment form submission
+        document.getElementById('experimentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const rates = document.getElementById('rates').value.split(',').map(r => parseInt(r.trim()));
+            const bufferSizes = document.getElementById('bufferSizes').value.split(',').map(b => parseInt(b.trim()));
+            const duration = parseInt(document.getElementById('duration').value);
+            const workerThreads = parseInt(document.getElementById('workerThreads').value);
+            
+            fetch('/api/start-comparison', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    rates: rates,
+                    buffer_sizes: bufferSizes,
+                    duration: duration,
+                    worker_threads: workerThreads
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    showAlert('Error: ' + data.error, 'danger');
+                } else {
+                    showAlert('Experiment started successfully!', 'success');
+                    updateExperimentStatus();
+                }
+            })
+            .catch(error => {
+                console.error('Error starting experiment:', error);
+                showAlert('Error starting experiment: ' + error, 'danger');
+            });
+        });
+
+        // Load results
+        function loadResults() {
+            document.getElementById('resultsLoader').style.display = 'block';
+            document.getElementById('resultsContent').style.display = 'none';
+            
+            fetch('/api/results')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('resultsLoader').style.display = 'none';
+                    document.getElementById('resultsContent').style.display = 'block';
+                    displayResults(data);
+                    updateChart(data);
+                    updateQuickStats(data);
+                })
+                .catch(error => {
+                    document.getElementById('resultsLoader').style.display = 'none';
+                    document.getElementById('resultsContent').style.display = 'block';
+                    console.error('Error loading results:', error);
+                });
+        }
+
+        // Display results in table
+        function displayResults(results) {
+            const tbody = document.getElementById('resultsTableBody');
+            
+            if (!results || results.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">
+                            <i class="fas fa-chart-line fa-3x mb-3 text-muted"></i>
+                            <h5>No experiments run yet</h5>
+                            <p class="text-muted">Configure and start an experiment to see performance results</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            
+            results.forEach(result => {
+                if (result.framework_metrics) {
+                    Object.entries(result.framework_metrics).forEach(([framework, metrics]) => {
+                        const row = tbody.insertRow();
+                        row.innerHTML = `
+                            <td>
+                                <span class="framework-pill ${framework === 'tensorflow' ? 'tensorflow-pill' : 'pytorch-pill'}">
+                                    ${framework === 'tensorflow' ? 'TensorFlow' : 'TorchServe'}
+                                </span>
+                            </td>
+                            <td><strong>${metrics.requested_rate || 'N/A'}</strong></td>
+                            <td>${metrics.buffer_size || 'N/A'}</td>
+                            <td><strong>${(metrics.avg_latency * 1000 || 0).toFixed(2)}ms</strong></td>
+                            <td>${(metrics.p95_latency * 1000 || 0).toFixed(2)}ms</td>
+                            <td><strong>${(metrics.throughput || 0).toFixed(2)}</strong></td>
+                            <td>
+                                <span class="badge" style="background-color: var(--success-color);">
+                                    ${((metrics.success_rate || 0) * 100).toFixed(1)}%
+                                </span>
+                            </td>
+                            <td>${(metrics.avg_cpu_usage || 0).toFixed(1)}%</td>
+                        `;
+                    });
+                }
+            });
+        }
+
+        // Update chart with results
+        function updateChart(results) {
+            if (!performanceChart || !results || results.length === 0) return;
+            
+            const rates = [...new Set(results.flatMap(r => 
+                r.framework_metrics ? Object.values(r.framework_metrics).map(m => m.requested_rate) : []
+            ))].sort((a, b) => a - b);
+            
+            const tfData = [];
+            const tsData = [];
+            
+            results.forEach(result => {
+                if (result.framework_metrics) {
+                    Object.entries(result.framework_metrics).forEach(([framework, metrics]) => {
+                        if (framework === 'tensorflow') {
+                            tfData.push((metrics.avg_latency * 1000 || 0));
+                        } else if (framework === 'torchserve') {
+                            tsData.push((metrics.avg_latency * 1000 || 0));
+                        }
+                    });
+                }
+            });
+            
+            performanceChart.data.labels = rates;
+            performanceChart.data.datasets[0].data = tfData;
+            performanceChart.data.datasets[1].data = tsData;
+            performanceChart.update();
+        }
+
+        // Update quick stats
+        function updateQuickStats(results) {
+            if (!results || results.length === 0) {
+                document.getElementById('totalExperiments').textContent = '0';
+                document.getElementById('avgLatency').textContent = '0ms';
+                return;
+            }
+            
+            const totalExperiments = results.length;
+            let totalLatency = 0;
+            let latencyCount = 0;
+            
+            results.forEach(result => {
+                if (result.framework_metrics) {
+                    Object.values(result.framework_metrics).forEach(metrics => {
+                        totalLatency += metrics.avg_latency * 1000 || 0;
+                        latencyCount++;
+                    });
+                }
+            });
+            
+            const avgLatency = latencyCount > 0 ? totalLatency / latencyCount : 0;
+            
+            document.getElementById('totalExperiments').textContent = totalExperiments;
+            document.getElementById('avgLatency').textContent = avgLatency.toFixed(2) + 'ms';
+        }
+
+        // Show alert
+        function showAlert(message, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                min-width: 300px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            `;
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // Reset button handler
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            if (confirm('Are you sure you want to reset all results?')) {
+                fetch('/api/reset', { method: 'POST' })
+                    .then(() => {
+                        showAlert('All results reset successfully!', 'success');
+                        loadResults();
+                    })
+                    .catch(error => {
+                        showAlert('Error resetting results: ' + error, 'danger');
+                    });
+            }
+        });
+    </script>
+</body>
+</html>
